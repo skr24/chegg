@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Chegg</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+  </head>
+
+  <body class="bg-light">
+
+    <div class="container">
+      <div class="py-5 text-center">
+        <h6><a href="/">⁣<pre>
+📔📚           📚
+📓📚📖  😫  📚📚📓
+📕📚📚  📝  📗💻📘
+📖⁣📖📖📖📖📖📖📖📖
+Doing my homework!
+✏️📝✏️📝✏️📝✏️📝
+</pre></a></h6>
+      </div>
+
+      <div class="row">
+        <div class="col-md-4">
+          <form class="card p-2 list-group mb-3" action="/query" method="post">
+            <div class="input-group">
+              <input class="form-control" name="query" placeholder="Chegg URL" type="text">
+              <div class="input-group-append">
+                <button type="submit" class="btn btn-secondary">Load</button>
+              </div>
+            </div>
+          </form>
+
+          {% if book %}
+          <div class="card mb-3">
+            <div class="row no-gutters">
+              <div class="col-4">
+                <img src="{{ book.image }}" class="img-fluid" alt="">
+              </div>
+              <div class="col">
+                <div class="card-body px-2">
+                  <h6 class="card-title">{{ book.full_name }}</h6>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+
+          {% if chapters %}
+          <ul class="list-group mb-3">
+            <li class="list-group-item justify-content-between lh-condensed">
+              <h5>Chapters</h5>
+              <p>
+                {% for chapter in chapters %}
+                  <a href="/tbs/{{ current.book.id }}/{{ chapter.id }}" class="badge {% if current and current.chapter and current.chapter.id|string == chapter.id|string %}badge-dark{% else %}badge-light{% endif %}">{{ chapter.name }}</a> 
+                {% endfor %}
+              </p>
+            </li>
+          </ul>
+          {% endif %}
+
+          {% if problems %}
+          <ul class="list-group mb-3">
+            <li class="list-group-item justify-content-between lh-condensed">
+              <h5>Problems</h5>
+              <p>
+                {% for problem in problems %}
+                  <a href="/tbs/{{ current.book.id }}/{{ current.chapter.id }}/{{ problem.id }}" class="badge {% if current and current.problem and current.problem.id|string == problem.id|string %}badge-dark{% else %}badge-light{% endif %}">{{ problem.name }}</a> 
+                {% endfor %}
+              </p>
+            </li>
+          </ul>
+          {% endif %}
+        </div>
+
+        
+        <div class="col-md-8">
+          {% if not current %}
+          <div class="card">
+            <div class="card-body">
+              <h2>Recent Books</h2>
+              <div class="card-columns">
+              {% for book in recent_books %}
+                <div class="card">
+                  <a href="/tbs/{{ book.id }}"><img class="card-img-top" src="{{ book.image }}" title="{{ book.full_name }}"></a>
+                </div>
+              {% endfor %}
+              </div>
+            </div>
+          </div>
+          {% endif %}
+
+          {% if current and current.problem %}
+          <ul class="list-group mb-3">
+            <li class="list-group-item justify-content-between">
+              <div>
+                <h5>Chapter {{ current.chapter.name }}, Problem {{ current.problem.name }}</h5>
+              </div>
+              {% if problem_text != None %}
+              {{ problem_text | safe }}
+              {% endif %}
+            </li>
+          </ul>
+          {% for solution in solutions %}
+          <ul class="list-group mb-3">
+            {% for step in solution.steps %}
+            <li class="list-group-item justify-content-between">
+              <div>
+                <h5>Step {{ step.i }} <span class="text-muted">of {{ solution.num_steps }}</span></h5>
+              </div>
+              {{ step.text | safe }}
+            </li>
+            {% endfor %}
+          </ul>
+          {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
